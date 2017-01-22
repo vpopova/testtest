@@ -48,18 +48,22 @@ module.exports = {
                     return;
                 } else {
                     // 2) and 3) If is a get call and require call
-                    if(isVariableGetCall(node)) {
+                    if (isVariableGetCall(node)) {
                         var isGet = isVariableGetCall(node);
                         if (!isGet) {
                             return;
                         }
 
                         var alabala = node.declarations[0].init.callee.object.name;
+                        if (!alabala) {
+                            return;
+                        }
 
-                        if(consoleVariableName !== alabala) {
-                            return
+                        if (consoleVariableName !== alabala) {
+                            return;
                         }
                     }
+
                     // Fetches value from get()'s argument
                     var getValue = getValueFromCall(node);
                     if (!getValue) {
@@ -68,7 +72,6 @@ module.exports = {
 
                     splitArguments(getValue);
                 }
-
                 if (isValidGetName(getValue)) {
                     return;
                 }
@@ -124,14 +127,13 @@ module.exports = {
                     } else {
                         callee = expression.callee;
                         getArguments = expression.arguments;
-
                     }
 
-                    if(!callee.object) {
+                    if (!callee.object) {
                         return;
                     }
 
-                    if(callee.object.type !== 'Identifier') {
+                    if (callee.object.type !== 'Identifier') {
                         return;
                     }
 
@@ -152,10 +154,9 @@ module.exports = {
 
                     var firstArgument = getArguments[0].value;
 
-                    if(!firstArgument) {
-                        return
+                    if (!firstArgument) {
+                        return;
                     }
-
                     splitArguments(firstArgument);
                 }
 
@@ -229,11 +230,7 @@ function isExpressionRequireCall(variable) {
  */
 function isVariableGetCall(variable) {
     try {
-        if (variable.declarations[0].init.callee.object.type === "CallExpression") {
-            return variable.declarations[0].init.callee.property.name === 'get';
-        }
         return variable.declarations[0].init.callee.property.name === 'get';
-
     } catch (e) {
         return false;
     }
