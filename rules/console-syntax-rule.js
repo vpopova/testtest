@@ -113,6 +113,15 @@ module.exports = {
                     } else {
                         callee = expression.callee;
                         getArguments = expression.arguments;
+
+                    }
+
+                    if(!callee.object) {
+                        return;
+                    }
+
+                    if(callee.object.type !== 'Identifier') {
+                        return;
                     }
 
                     var property = callee.property;
@@ -130,9 +139,11 @@ module.exports = {
                         return;
                     }
 
-                    console.log(consoleVariableName);
-
                     var firstArgument = getArguments[0].value;
+
+                    if(!firstArgument) {
+                        return
+                    }
 
                     splitArguments(firstArgument);
                 }
@@ -157,6 +168,15 @@ module.exports = {
  */
 function isAssignmentExpression(expression) {
     return expression && expression.type === 'AssignmentExpression';
+}
+
+/**
+ * Checks a given node is a MemberExpression type.
+ * @param {Object} expression - A expression to check.
+ * @returns {boolean} `true` if the node is a MemberExpression node.
+ */
+function isMemberExpression(expression) {
+    return expression && expression.type === 'MemberExpression';
 }
 
 /**
@@ -207,7 +227,10 @@ function isExpressionRequireCall(variable) {
  */
 function isVariableGetCall(variable) {
     try {
-        return variable.declarations[0].init.callee.property.name === 'get';
+        if (variable.declarations[0].init.callee.object.type === "CallExpression") {
+            return variable.declarations[0].init.callee.property.name === 'get';
+        }
+
     } catch (e) {
         return false;
     }
