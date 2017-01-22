@@ -1,0 +1,21 @@
+{
+  "name": "eslint-plugin-bestseller",
+  "version": "0.0.1",
+  "description": "BESTSELLER ESLint plugin.",
+  "keywords": "BESTSELLER, eslint-plugin, eslint",
+  "license": "MIT",
+  "repository": "bitbucket:bestseller-ecom/eslint-plugin-bestseller",
+  "main": "index.js",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.x",
+    "eslint-config-bestseller": "^1.0.0-RC1",
+    "mocha": "^3.2.0",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0"
+  },
+  "scripts": {
+    "lint": "eslint **/*.js",
+    "test": "mocha -R xunit --reporter-options output=mocha.xml"
+  }
+}

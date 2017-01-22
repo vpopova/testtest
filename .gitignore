@@ -1,0 +1,10 @@
+# Generated files
+mocha.xml
+.idea/
+.vscode/
+.tern-project
+.tern-port
+
+# Node
+npm-debug.log
+node_modules/
