@@ -48,7 +48,18 @@ module.exports = {
                     return;
                 } else {
                     // 2) and 3) If is a get call and require call
+                    if(isVariableGetCall(node)) {
+                        var isGet = isVariableGetCall(node);
+                        if (!isGet) {
+                            return;
+                        }
 
+                        var alabala = node.declarations[0].init.callee.object.name;
+
+                        if(consoleVariableName !== alabala) {
+                            return
+                        }
+                    }
                     // Fetches value from get()'s argument
                     var getValue = getValueFromCall(node);
                     if (!getValue) {
@@ -171,15 +182,6 @@ function isAssignmentExpression(expression) {
 }
 
 /**
- * Checks a given node is a MemberExpression type.
- * @param {Object} expression - A expression to check.
- * @returns {boolean} `true` if the node is a MemberExpression node.
- */
-function isMemberExpression(expression) {
-    return expression && expression.type === 'MemberExpression';
-}
-
-/**
  * Fetches the name of a variable
  * @param {Object} expression - a node.expression
  * @returns {?String} - the var name
@@ -230,6 +232,7 @@ function isVariableGetCall(variable) {
         if (variable.declarations[0].init.callee.object.type === "CallExpression") {
             return variable.declarations[0].init.callee.property.name === 'get';
         }
+        return variable.declarations[0].init.callee.property.name === 'get';
 
     } catch (e) {
         return false;
