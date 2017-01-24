@@ -61,7 +61,12 @@ module.exports = {
 
                         // match get variable name and require variable name
                         var requireVariableName = node.declarations[0].init.callee.object.name;
-                        if (consoleVariableName !== requireVariableName) {
+
+                        // escape this case var unitTestsSrc = grunt.config.get('unitTestsSrc');
+                        if (node.declarations[0].init.callee.object.property) {
+                            return
+                        }
+                        if (requireVariableName && (consoleVariableName !== requireVariableName)) {
                             return;
                         }
                     }
