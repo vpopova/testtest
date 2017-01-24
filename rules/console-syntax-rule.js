@@ -1,7 +1,7 @@
 'use strict';
 
 // allowed file names
-var consoleAllowedNames = ['account', 'pdp', 'plp', 'content', 'checkout', 'jobs', 'adyen', 'globalcollect', 'klarna', 'sds', 'mailchimp', 'marked', 'marketingcloud', 'paris', 'zendesk', 'multipage'];
+var consoleAllowedNames = require('../ConsoleAllowedFilename.json');
 
 // keep the name of the console variable e.g. console, Console, Logger, logger etc.
 var consoleVariableName;
@@ -23,7 +23,7 @@ module.exports = {
             // Cases:
             //1) var console = require('../monitoring/Console.ds')
             //2) var console = require('../monitoring/Console.ds').get('multipage.widget');
-            //3) var Logger = Console.get('mailchimp.newsletter.addmember');
+            //3) var Console = require('/mod_bse_core/cartridge/scripts/monitoring/Console.ds'); var Logger = Console.get('mailchimp.newsletter.addmember');
             VariableDeclaration: function(node) {
                 if (!node.declarations || node.declarations.length === 0) {
                     return;
@@ -36,9 +36,13 @@ module.exports = {
 
                 // 1) If is a require call
                 if (isVariableRequireCall(node)) {
-                    // Exit if require() doesn't require monitoring/Console
-                    var isConsole = isVariableConsoleRequire(node);
-                    if (!isConsole) {
+                    // Exit if get argument does't contains monitoring/Console.ds
+                    var argumentValue = node.declarations[0].init.arguments[0].value;
+                    if (!argumentValue) {
+                        return;
+                    }
+                    var isVariableRightArgument = checkGetArgument(argumentValue);
+                    if (!isVariableRightArgument) {
                         return;
                     }
 
@@ -54,12 +58,9 @@ module.exports = {
                             return;
                         }
 
-                        var alabala = node.declarations[0].init.callee.object.name;
-                        if (!alabala) {
-                            return;
-                        }
-
-                        if (consoleVariableName !== alabala) {
+                        // match get variable name and require variable name
+                        var requireVariableName = node.declarations[0].init.callee.object.name;
+                        if (requireVariableName && (consoleVariableName !== requireVariableName)) {
                             return;
                         }
                     }
@@ -91,13 +92,19 @@ module.exports = {
                         return;
                     }
 
-                    // Exit if there isn't monitoring/Console
-                    if (!isExpressionConsoleRequire(expression)) {
+                    // Exit if there isn't get() call
+                    if (!isExpressionGetCall) {
                         return;
                     }
 
-                    // Exit if there isn't get() call
-                    if (!isExpressionGetCall) {
+                    // Exit if get argument does't contains monitoring/Console.ds
+                    var argumentValue = expression.right.callee.object.arguments[0].value;
+                    if (!argumentValue) {
+                        return;
+                    }
+
+                    var isExpressionRightArgument = checkGetArgument(argumentValue);
+                    if (!isExpressionRightArgument) {
                         return;
                     }
 
@@ -251,30 +258,13 @@ function isExpressionGetCall(expression) {
 }
 
 /**
- * Checks if a variable is a Console.ds require in case like this:
- * var console = require('../monitoring/Console.ds')
- * @param {Object} variable - the variable to check
- * @returns {Boolean} - require call or not
+ * Checks get() argument for monitoring/Console
+ * @param {Object} argument - the argument to check
+ * @returns {Boolean} - right argument or not
  */
-function isVariableConsoleRequire(variable) {
+function checkGetArgument(argument) {
     try {
-        var requireValue = variable.declarations[0].init.arguments[0].value;
-        return requireValue.indexOf('monitoring/Console') !== -1;
-    } catch (e) {
-        return false;
-    }
-}
-
-/**
- * Checks if a expression is a Console.ds require in case like this:
- * var console = require('../monitoring/Console.ds')
- * @param {Object} expression - the expression to check
- * @returns {Boolean} - require call or not
- */
-function isExpressionConsoleRequire(expression) {
-    try {
-        var requireValue = expression.right.callee.object.arguments[0].value;
-        return requireValue.indexOf('monitoring/Console') !== -1;
+        return argument.indexOf('monitoring/Console') !== -1;
     } catch (e) {
         return false;
     }
