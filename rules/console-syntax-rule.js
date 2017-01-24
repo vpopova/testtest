@@ -2,6 +2,7 @@
 
 // allowed file names
 var consoleAllowedNames = require('../ConsoleAllowedFilename.json');
+
 // keep the name of the console variable e.g. console, Console, Logger, logger etc.
 var consoleVariableName;
 
@@ -38,7 +39,7 @@ module.exports = {
 
                     // Exit if get argument does't contains monitoring/Console.ds
                     var argumentValue = node.declarations[0].init.arguments[0].value;
-                    if(!argumentValue) {
+                    if (!argumentValue) {
                         return;
                     }
                     var isVariableRightArgument = checkGetArgument(argumentValue);
@@ -99,7 +100,7 @@ module.exports = {
 
                     // Exit if get argument does't contains monitoring/Console.ds
                     var argumentValue = expression.right.callee.object.arguments[0].value;
-                    if(!argumentValue) {
+                    if (!argumentValue) {
                         return;
                     }
 
