@@ -1,7 +1,7 @@
 'use strict';
 
 // allowed file names
-var consoleAllowedNames = require('../ConsoleAllowedFilename.json');
+var consoleAllowedNames;
 
 // keep the name of the console variable e.g. console, Console, Logger, logger etc.
 var consoleVariableName;
@@ -15,9 +15,21 @@ module.exports = {
             category: 'Custom errors',
             recommended: true
         },
-        schema: []
+        schema: [
+            {
+                type: 'object',
+                properties: {
+                    consoleAllowedNames: {
+                        type: 'string'
+                    }
+                },
+                additionalProperties: false
+            }
+        ]
     },
     create: function(context) {
+        var options = context.options[0];
+        consoleAllowedNames = options.consoleAllowedNames;
         return {
 
             // Cases:
@@ -36,7 +48,6 @@ module.exports = {
 
                 // 1) If is a require call
                 if (isVariableRequireCall(node)) {
-
                     // Exit if get argument does't contains monitoring/Console.ds
                     var argumentValue = node.declarations[0].init.arguments[0].value;
                     if (!argumentValue) {
@@ -64,7 +75,7 @@ module.exports = {
 
                         // escape this case var unitTestsSrc = grunt.config.get('unitTestsSrc');
                         if (node.declarations[0].init.callee.object.property) {
-                            return
+                            return;
                         }
                         if (requireVariableName && (consoleVariableName !== requireVariableName)) {
                             return;
@@ -248,7 +259,6 @@ function isVariableGetCall(variable) {
         return false;
     }
 }
-
 
 /**
  * Checks if the given expression calls get()
