@@ -13,7 +13,24 @@ describe('console-syntax-rule', function() {
     var variableDeclarationRule;
     var invalidGetValue = 'invalid.minicart.rendering';
     var validGetValue = 'checkout.minicart.rendering';
-    var consoleAllowedNames = 'account, pdp, plp, content, checkout, jobs, adyen, globalcollect, klarna, sds, mailchimp, marked, marketingcloud, paris, zendesk, multipage';
+    var consoleAllowedNames = [
+        "account",
+        "pdp",
+        "plp",
+        "content",
+        "checkout",
+        "jobs",
+        "adyen",
+        "globalcollect",
+        "klarna",
+        "sds",
+        "mailchimp",
+        "marked",
+        "marketingcloud",
+        "paris",
+        "zendesk",
+        "multipage"
+    ];
 
     beforeEach(function() {
         context = {
