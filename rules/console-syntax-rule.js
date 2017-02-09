@@ -29,6 +29,8 @@ module.exports = {
     },
     create: function(context) {
         var options = context.options[0];
+        consoleAllowedNames = options.consoleAllowedNames;
+        
         return {
 
             // Cases:
